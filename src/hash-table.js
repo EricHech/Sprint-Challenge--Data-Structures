@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
-const { LimitedArray, getIndexBelowMax } = require('./hash-table-helpers');
+const { LimitedArray, getIndexBelowMax, LinkedList, } = require('./hash-table-helpers');
 
 class HashTable {
   constructor(limit = 8) {
@@ -13,6 +13,7 @@ class HashTable {
     this.limit *= 2;
     const oldStorage = this.storage;
     this.storage = new LimitedArray(this.limit);
+
     oldStorage.each((bucket) => {
       if (!bucket) return;
       bucket.forEach((pair) => {
@@ -36,21 +37,25 @@ class HashTable {
   insert(key, value) {
     if (this.capacityIsFull()) this.resize();
     const index = getIndexBelowMax(key.toString(), this.limit);
-    let bucket = this.storage.get(index) || [];
+    const bucket = this.storage.get(index) || new LinkedList();
+    const theNode = bucket.findNode(key, bucket.head);
 
-    bucket = bucket.filter(item => item[0] !== key);
-    bucket.push([key, value]);
+    if (theNode !== false) {
+      bucket.theNode.value = value;
+    } else bucket.addToTail([key, value]);
     this.storage.set(index, bucket);
   }
+
   // Removes the key, value pair from the hash table
   // Fetch the bucket associated with the given key using the getIndexBelowMax function
   // Remove the key, value pair from the bucket
   remove(key) {
     const index = getIndexBelowMax(key.toString(), this.limit);
-    let bucket = this.storage.get(index);
+    const bucket = this.storage.get(index);
 
     if (bucket) {
-      bucket = bucket.filter(item => item[0] !== key);
+      const toRemove = bucket.findNode(key, bucket.head);
+      toRemove.removeHead();
       this.storage.set(index, bucket);
     }
   }
@@ -61,11 +66,8 @@ class HashTable {
     const index = getIndexBelowMax(key.toString(), this.limit);
     const bucket = this.storage.get(index);
     let retrieved;
-    if (bucket) {
-      retrieved = bucket.filter(item => item[0] === key)[0];
-    }
-
-    return retrieved ? retrieved[1] : undefined;
+    if (bucket) retrieved = bucket.findNode(key, bucket.head);
+    return retrieved ? retrieved.value : undefined;
   }
 }
 

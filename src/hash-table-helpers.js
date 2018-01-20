@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 // A special array class that can only store the number of items specified by the `limit` argument
 class LimitedArray {
   constructor(limit) {
@@ -49,7 +50,78 @@ const getIndexBelowMax = (str, max) => {
   return hash % max;
 };
 
+class LinkedList {
+  constructor() {
+    this.head = null;
+    this.tail = null;
+    // Do not modify anything inside of the constructor
+  }
+  // Wraps the given value in a node object and adds the node to the tail of the list
+  // If the list is empty, the new element is considered the tail as well as the head
+  // If there is one element in the list before the new element is added, the new element becomes the tail of the list
+  addToTail(value) {
+    const newNode = {
+      next: null,
+      value,
+    };
+
+    if (this.head === null) {
+      this.head = newNode;
+      this.tail = newNode;
+      return;
+    }
+
+    this.tail.next = newNode;
+    this.tail = newNode;
+  }
+  // Removes the current head node from the list, replacing it with the next element in the list
+  // Returns the value of the removed node
+  removeHead() {
+    // need to check if there is a head node
+    if (this.head === null) return;
+
+    // check if head has a next (or is it a single element)
+    if (this.head.next === null) {
+      const value = this.head.value;
+      this.head = null;
+      this.tail = null;
+      return value;
+    }
+    const value = this.head.value;
+    this.head = this.head.next;
+    return value;
+  }
+
+  // Checks the linked list for the given value
+  // Returns true if the the value is found in the list, false otherwise
+  contains(value) {
+    if (this.head === null) return false;
+    const searchLinkedList = (node) => {
+      if (node.value === value) return true;
+      if (node.next === null) return false;
+      return searchLinkedList(node.next);
+    };
+    return searchLinkedList(this.head);
+  }
+
+  findNode(key) {
+    // check if the linked list is empty
+    if (this.head === null) return false;
+    // otherwise, define our recursive function
+    const searchLinkedList = (node) => {
+      // check if the current node's key matches what we're looking for
+      if (node.key === key) return node;
+      // check if we've reached the end of the linked list
+      if (node.next === null) return false;
+      // make our recursive call
+      return searchLinkedList(node.next);
+    };
+    return searchLinkedList(this.head);
+  }
+}
+
 module.exports = {
   LimitedArray,
   getIndexBelowMax,
+  LinkedList,
 };
