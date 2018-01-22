@@ -92,6 +92,37 @@ class LinkedList {
     return value;
   }
 
+  removeNode(previousNode) {
+    if (this.head === null) return;
+
+    // check if head has a next (or is it a single element)
+    if (this.head.next === null) {
+      const value = this.head.value;
+      this.head = null;
+      this.tail = null;
+      return value;
+    }
+
+    const value = this.value;
+    previousNode.next = this.next;
+    return value;
+  }
+
+  findPreviousNode(nextValue, head) {
+    // check if the linked list is empty
+    if (head === null) return false;
+    // otherwise, define our recursive function
+    const searchLinkedList = (node) => {
+      // check if the current node's key matches what we're looking for
+      if (node.next === nextValue) return node;
+      // check if we've reached the end of the linked list
+      if (node.next === null) return false;
+      // make our recursive call
+      return searchLinkedList(node.next);
+    };
+    return searchLinkedList(head);
+  }
+
   // Checks the linked list for the given value
   // Returns true if the the value is found in the list, false otherwise
   contains(value) {
@@ -104,9 +135,9 @@ class LinkedList {
     return searchLinkedList(this.head);
   }
 
-  findNode(key) {
+  findNode(key, head) {
     // check if the linked list is empty
-    if (this.head === null) return false;
+    if (head === null) return false;
     // otherwise, define our recursive function
     const searchLinkedList = (node) => {
       // check if the current node's key matches what we're looking for
@@ -116,7 +147,7 @@ class LinkedList {
       // make our recursive call
       return searchLinkedList(node.next);
     };
-    return searchLinkedList(this.head);
+    return searchLinkedList(head);
   }
 }
 

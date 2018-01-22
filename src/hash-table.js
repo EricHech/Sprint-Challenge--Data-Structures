@@ -55,7 +55,8 @@ class HashTable {
 
     if (bucket) {
       const toRemove = bucket.findNode(key, bucket.head);
-      toRemove.removeHead();
+      const previous = bucket.findPreviousNode(toRemove.next, bucket.head);
+      toRemove.removeNode(previous);
       this.storage.set(index, bucket);
     }
   }
